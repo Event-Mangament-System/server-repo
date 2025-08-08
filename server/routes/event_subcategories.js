@@ -32,6 +32,10 @@ router.get("/:id", (req, res) => {
   });
 });
 
+
+
+
+
 // POST new subcategory (already given)
 router.post("/", (req, res) => {
   const { category_id, sub_category, price } = req.body;
