@@ -18,7 +18,7 @@ router.get("/", (req, res) => {
 });
 
 // GET subcategory by ID
-router.get("/:id", (req, res) => {
+/* router.get("/:id", (req, res) => {
   const sql = `
     SELECT es.*, ec.name AS category_name
     FROM event_subcategories es
@@ -29,6 +29,21 @@ router.get("/:id", (req, res) => {
     if (err) return res.send(apiError(err));
     if (results.length === 0) return res.send(apiError("Subcategory not found"));
     res.send(apiSuccess(results[0]));
+  });
+}); */
+
+// GET all subcategories by category ID
+router.get("/category/:categoryId", (req, res) => {
+  const sql = `
+    SELECT es.*, ec.name AS category_name
+    FROM event_subcategories es
+    JOIN event_categories ec ON es.category_id = ec.id
+    WHERE es.category_id = ?
+  `;
+  db.query(sql, [req.params.categoryId], (err, results) => {
+    if (err) return res.send(apiError(err));
+    // Even if no subcategories found, send success with empty array
+    res.send(apiSuccess(results));
   });
 });
 

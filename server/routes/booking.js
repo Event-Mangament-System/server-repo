@@ -22,20 +22,44 @@ router.get("/:id", (req, resp) => {
 });
 
 // POST a new booking
-router.post("/", (req, resp) => {
-     const { user_id, event_id, booking_code, booking_date, status } = req.body;
-    const booking = { user_id, event_id, booking_code, booking_date, status };
-    const validation = validateFields(booking, ["user_id", "event_id", "booking_code", "booking_date", "status"]);
+/* router.post("/", (req, resp) => {
+     const { user_id, event_id,  booking_date, status } = req.body;
+    const booking = { user_id, event_id,  booking_date, status };
+    const validation = validateFields(booking, ["user_id", "event_id", "booking_date", "status"]);
     if (!validation.valid) {
         return resp.send(apiError(`Missing or invalid value for: ${validation.missingField}`));
     }
 
     db.query(
-        "INSERT INTO booking (user_id, event_id, booking_code, booking_date, status) VALUES (?, ?, ?, ?, ?)",
-        [user_id, event_id, booking_code, booking_date, status],
+        "INSERT INTO booking (user_id, event_id, booking_date, status) VALUES (?, ?, ?, ?)",
+        [user_id, event_id,  booking_date, status],
         (err, result) => {
             if (err) return resp.send(apiError(err));
             resp.send(apiSuccess({ id: result.insertId, ...booking }));
+        }
+    );
+});
+ */
+router.post("/", (req, resp) => {
+    const { user_id } = req.body;
+
+    // Validate user_id only, since event_id is removed
+    const validation = validateFields({ user_id }, ["user_id"]);
+    if (!validation.valid) {
+        return resp.send(apiError(`Missing or invalid value for: ${validation.missingField}`));
+    }
+
+    // Use current date on server side
+    const booking_date = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+    const status = "pending";
+
+    db.query(
+        "INSERT INTO booking (user_id, booking_date, status) VALUES (?, ?, ?)",
+        [user_id, booking_date, status],
+        (err, result) => {
+            if (err) return resp.send(apiError(err));
+            // Return the newly created booking id and other info
+            resp.send(apiSuccess({ id: result.insertId, user_id, booking_date, status }));
         }
     );
 });
@@ -43,16 +67,16 @@ router.post("/", (req, resp) => {
 
 // PUT update booking
 router.put("/:id", (req, resp) => {
-    const { user_id, event_id, booking_code, booking_date, status } = req.body;
-    const booking = { user_id, event_id, booking_code, booking_date, status };
+    const { user_id, event_id,  booking_date, status } = req.body;
+    const booking = { user_id, event_id, booking_date, status };
 
-    if (!validateFields(booking, ["user_id", "event_id", "booking_code", "booking_date", "status"])) {
+    if (!validateFields(booking, ["user_id", "event_id",  "booking_date", "status"])) {
         return resp.send(apiError("All booking fields are required for update"));
     }
 
     db.query(
-        "UPDATE booking SET user_id=?, event_id=?, booking_code=?, booking_date=?, status=? WHERE id=?",
-        [user_id, event_id, booking_code, booking_date, status, req.params.id],
+        "UPDATE booking SET user_id=?, event_id=?,  booking_date=?, status=? WHERE id=?",
+        [user_id, event_id,  booking_date, status, req.params.id],
         (err, result) => {
             if (err) return resp.send(apiError(err));
             if (result.affectedRows !== 1) return resp.send(apiError("Update failed"));
