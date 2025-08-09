@@ -8,6 +8,7 @@ const bookingRouter = require("./routes/booking");
 const eventcategoriesRouter = require("./routes/event_categories");
 const eventsubcategoriesRouter = require("./routes/event_subcategories");
 const event_serviceRouter = require("./routes/event_services");
+const service_typesRouter = require("./routes/service_types");
 const { jwtAuth } = require("./utils/jwtauth");
 
 const cors = require("cors");
@@ -23,6 +24,7 @@ app.use("/booking", bookingRouter);
 app.use("/event_categories", eventcategoriesRouter);
 app.use("/event_subcategories", eventsubcategoriesRouter);
 app.use("/event_services",event_serviceRouter);
+app.use("/service_types",service_typesRouter);
 
 
 
