@@ -39,4 +39,24 @@ router.delete("/delete/:id",(req,resp)=>{
     })
 })
 
+
+
+
+// API to get service_types with service name
+router.get("/service-types", (req, res) => {
+  const query = `
+    SELECT st.id, st.name AS service_type_name, st.price, s.name AS service_name
+    FROM service_types st
+    INNER JOIN services s ON st.service_id = s.id
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Database query failed" });
+    }
+    res.json(results);
+  });
+});
+
 module.exports = router;
