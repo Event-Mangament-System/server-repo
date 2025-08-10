@@ -94,4 +94,13 @@ router.delete("/:id", (req, resp) => {
     });
 });
 
+
+router.get("/byuser/:user_id", (req, resp) =>{
+    db.query("select * from booking where user_id=?", [req.params.user_id], (err, result) =>{
+        console.log()
+        if (err) return resp.send(apiError(err))
+        resp.send(apiSuccess(result));
+    });
+})
+
 module.exports = router;
